@@ -1,4 +1,4 @@
-<?php view('admin.layouts.header', ['title' => 'All Roles / Create role']) ?>
+<?php view('admin.layouts.header', ['title' => 'User management system | Create role']) ?>
 <?php view('admin.layouts.asidebar') ?>
 <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
   <?php view('admin.layouts.navbar') ?>
@@ -14,6 +14,10 @@
           <div class="card-body px-0 pb-2">
             <div class="row">
               <div class="col-md-6 offset-md-2">
+              <?php if(isset($_SESSION['fail'])): ?>
+                <div class="alert alert-danger text-white mt-4 mx-3"><?= $_SESSION['fail']; ?></div>
+                <?php unset($_SESSION['fail']); ?>
+              <?php endif; ?>
               <form role="form" method="POST" action="/admin/roles/create">
                   <div class="input-group input-group-outline mb-3">
                     <input type="text" class="form-control" placeholder="Role Name" value="<?= isset($_SESSION['role_create']['role_name']) ? $_SESSION['role_create']['role_name']  : ''; ?>" name="role_name">
@@ -24,16 +28,7 @@
                       <?php unset($_SESSION['errors']['role_create']['role_name']); ?>
                     </span>
                   <?php endif; ?>
-                  <div class="input-group input-group-outline mb-3">
-                    <input type="text" class="form-control" placeholder="Description" value="<?= isset($_SESSION['role_create']['description']) ? $_SESSION['role_create']['description']  : ''; ?>" name="description">
                     <?php unset($_SESSION['role_create']); ?>
-                  </div>
-                  <?php if (getValidationError('description', 'role_create')): ?>
-                    <span class="alert alert-danger form-control" role="alert">
-                      <?= getValidationError('description', 'role_create'); ?>
-                      <?php unset($_SESSION['errors']['role_create']['description']); ?>
-                    </span>
-                  <?php endif; ?>
                   <div>
                     <button type="submit" class="btn btn-lg bg-gradient-dark btn-lg mt-4 mb-0">Save</button>
                   </div>

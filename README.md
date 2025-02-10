@@ -17,7 +17,7 @@ git clone https://github.com/kyawlinntun-gif/user_role_management.git
 Create a new database in MySQL (or your preferred database server).
 Update the config/config.php file in the project root to include your database connection settings:
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'user_role_management');
+define('DB_NAME', 'user_management_sample');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
@@ -25,6 +25,7 @@ define('DB_PASS', '');
 Run the following command to set up and unset up the required database tables:
 php migrate_table.php
 php refresh_migrations.php
+php run_seeder.php
 
 4. Serve the application
 Start the development server:

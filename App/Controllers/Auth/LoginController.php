@@ -2,20 +2,11 @@
 
 namespace App\Controllers\Auth;
 
-use App\Core\Database;
+use App\Models\AdminUser;
 use App\Validator\Validator;
-use PDO;
 
 class LoginController
 {
-  private $db;
-
-  public function __construct()
-  {
-    $database = new Database;
-    $this->db = $database->getConnection();
-  }
-
   public function showLoginForm()
   {
     return view('auth.login');
@@ -46,15 +37,19 @@ class LoginController
       exit;
     }
 
-    $stmt = $this->db->prepare("SELECT user_id, name, email, password, role_name FROM users LEFT JOIN roles ON users.role_id = roles.role_id WHERE email = :email");
-    $stmt->execute(['email' => $request->get('email')]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($user && password_verify($request->get('password'), $user['password'])) {
-      $_SESSION['user_id'] = $user['user_id'];
-      $_SESSION['user_name'] = $user['name'];
-      $_SESSION['user_email'] = $user['email'];
-      $_SESSION['user_role'] = $user['role_name'];
+    $admin_user = new AdminUser();
+    $get_admin_user = $admin_user->getUserForAuth($request->get('email'));
+    if (!$get_admin_user['is_active']) {
+      $_SESSION['email'] = $data['email'];
+      $_SESSION['fail'] = "Your account is disabled!";
+      header("Location: /login");
+      exit;
+    }
+    if ($get_admin_user && password_verify($request->get('password'), $get_admin_user['password'])) {
+      $_SESSION['user_id'] = $get_admin_user['admin_user_id'];
+      $_SESSION['user_name'] = $get_admin_user['admin_user_name'];
+      $_SESSION['user_email'] = $get_admin_user['email'];
+      $_SESSION['user_role'] = $get_admin_user['role_name'];
       header("location: /");
       exit;
     } else {
@@ -67,16 +62,11 @@ class LoginController
 
   public function logout()
   {
-    // Start the session
-    session_start();
-
     // Destroy the session
     session_unset(); 
     session_destroy();
-
     // Remove the session cookie
     setcookie(session_name(), '', time() - 3600, '/');
-
     // Redirect to the login page after logout
     header('Location: /login');
     exit();

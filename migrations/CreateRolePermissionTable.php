@@ -4,10 +4,11 @@ class CreateRolePermissionTable
   public function up($pdo)
   {
     $sql = "CREATE TABLE IF NOT EXISTS role_permissions (
+      id INT PRIMARY KEY AUTO_INCREMENT,
       role_id INT,
       permission_id INT,
-      FOREIGN KEY (role_id) REFERENCES roles(role_id),
-      FOREIGN KEY (permission_id) REFERENCES permissions(permission_id),
+      FOREIGN KEY (role_id) REFERENCES roles(id),
+      FOREIGN KEY (permission_id) REFERENCES permissions(id),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";

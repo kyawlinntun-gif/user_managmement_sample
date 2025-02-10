@@ -7,8 +7,8 @@ use App\Core\Database;
 class Role
 {
   private $db;
-  public $role_name;
-  public $description;
+  public $id;
+  public $name;
 
   public function __construct()
   {
@@ -19,94 +19,127 @@ class Role
   public function save()
   {
     try {
-      $stmt = $this->db->prepare("INSERT INTO roles (role_name, description) VALUES (:role_name, :description)");
-      $stmt->bindParam(':role_name', $this->role_name);
-      $stmt->bindParam(':description', $this->description);
-      $stmt->execute();
+      $stmt = $this->db->prepare("INSERT INTO roles (name) VALUES (:name)");
+      $stmt->bindParam(':name', $this->name, PDO::PARAM_STR);
+
+      return $stmt->execute();
     } catch (PDOException $e) {
-      echo "Error inserting roles: " . $e->getMessage();
+      if ($e->getCode() == 23000) {
+        return false;
+      }
+      echo "Error inserting role: " . $e->getMessage();
     }
   }
 
   public function getAllRoles()
   {
-    try {
-      $stmt = $this->db->prepare("SELECT role_id, role_name, description FROM roles");
+    try { 
+      $stmt = $this->db->prepare("SELECT id, name FROM roles");
       $stmt->execute();
       $roles = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $roles;
     } catch (PDOException $e) {
-      echo "Error fetching all roles: " . $e->getMessage();
+      echo "Error getting roles: " . $e->getMessage();
     }
   }
 
-  public function getRoleById($id)
+  public function getRoleById()
   {
     try {
-      $stmt = $this->db->prepare("SELECT role_id, role_name, description FROM roles WHERE role_id = :id");
-      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+      $stmt = $this->db->prepare("SELECT id, name FROM roles WHERE id = :id");
+      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
       $stmt->execute();
       $role = $stmt->fetch(PDO::FETCH_ASSOC);
       return $role;
     } catch (PDOException $e) {
-      echo "Error fetching all roles: " . $e->getMessage();
+      echo "Error getting role: " . $e->getMessage();
     }
   }
 
-  public function update($id)
+  public function getRoleByName()
   {
     try {
-      $stmt = $this->db->prepare("UPDATE roles SET role_name = :role_name, description = :description WHERE role_id = :id");
-      $stmt->bindParam(":role_name", $this->role_name);
-      $stmt->bindParam(":description", $this->description);
-      $stmt->bindParam(":id", $id);
+      $stmt = $this->db->prepare("SELECT id, name FROM roles WHERE name = :name");
+      $stmt->bindParam(":name", $this->name, PDO::PARAM_STR);
       $stmt->execute();
+      $role = $stmt->fetch(PDO::FETCH_ASSOC);
+      return $role;
     } catch (PDOException $e) {
-      echo "Error inserting role: " . $e->getMessage();
+      echo "Error getting role: " . $e->getMessage();
     }
   }
 
-  public function destroy($id)
+  public function update()
   {
     try {
-      $stmt = $this->db->prepare("DELETE FROM roles WHERE role_id = :id");
-      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-      $stmt->execute();
+      $stmt = $this->db->prepare("UPDATE roles SET name = :name, updated_at = now() WHERE id = :id");
+      $stmt->bindParam(":name", $this->name, PDO::PARAM_STR);
+      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+      return $stmt->execute();
     } catch (PDOException $e) {
-      echo "Error fetching role by id: " . $e->getMessage();
+      if ($e->getCode() == 23000) {
+        return false;
+      }
+      echo "Error getting role: " . $e->getMessage();
     }
   }
 
-  public function getPermissionsByRole($id)
-  {
-    try { 
-      $stmt = $this->db->prepare("SELECT permissions.permission_id FROM roles LEFT JOIN role_permissions ON roles.role_id = role_permissions.role_id LEFT JOIN permissions ON role_permissions.permission_id = permissions.permission_id WHERE roles.role_id = :id");
-      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-      $stmt->execute();
-      $roles = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      return $roles;
-    } catch (PDOException $e) {
-      echo "Error fetching permissions by role: " . $e->getMessage();
-    }
-  }
+  // public function delete()
+  // {
+  //   try {
+  //     $stmt = $this->db->prepare("DELETE FROM role_permissions WHERE role_id = :id");
+  //     $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+  //     $stmt->execute();
 
-  public function updateRolePermissionsData($role_id, $permissions)
-  {
+  //     $stmt = $this->db->prepare("DELETE FROM roles WHERE id = :id");
+  //     $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+  //     $stmt->execute();
+  //     die();
+  //   } catch (PDOException $e) {
+  //     // if ($e->getCode() == 23000) {
+  //     //   return false;
+  //     // }
+  //     echo "Error getting role: " . $e->getMessage();
+  //     die();
+  //   }
+  // }
+
+  public function delete()
+{
     try {
         $stmt = $this->db->prepare("DELETE FROM role_permissions WHERE role_id = :role_id");
-        $stmt->bindParam(':role_id', $role_id, PDO::PARAM_INT);
+        $stmt->bindParam(":role_id", $this->id, PDO::PARAM_INT);
         $stmt->execute();
+        
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM admin_users WHERE role_id = :role_id");
+        $stmt->bindParam(":role_id", $this->id, PDO::PARAM_INT);
+        $stmt->execute();
+        $userCount = $stmt->fetchColumn();
 
-        $stmt = $this->db->prepare("INSERT INTO role_permissions (role_id, permission_id) VALUES (:role_id, :permission_id)");
-        foreach ($permissions as $permission_id) {
-          $stmt->bindParam(':role_id', $role_id, PDO::PARAM_INT);
-          $stmt->bindParam(':permission_id', $permission_id, PDO::PARAM_INT);
-          $stmt->execute();
+        if ($userCount > 0) {
+            return false;
         }
+
+        $stmt = $this->db->prepare("DELETE FROM roles WHERE id = :role_id");
+        $stmt->bindParam(":role_id", $this->id, PDO::PARAM_INT);
+        return $stmt->execute();
     } catch (PDOException $e) {
-      echo "Error updating role permissions: " . $e->getMessage();
+        return "Error deleting role: " . $e->getMessage();
     }
-  }
+}
+
+
+  // public function getAllRolesPermissionsFeatures()
+  // {
+  //   try {
+  //     $stmt = $this->db->prepare("SELECT roles.id AS role_id, roles.name AS role_name, GROUP_CONCAT(permissions.name SEPARATOR ', ') AS permissions, features.name AS feature_name FROM roles LEFT JOIN role_permissions ON roles.id = role_permissions.role_id LEFT JOIN permissions ON role_permissions.permission_id = permissions.id LEFT JOIN features ON permissions.feature_id = features.id GROUP BY roles.id, features.id");
+  //     $stmt->execute();
+  //     $rolesPermissionsFeatures = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  //     return $rolesPermissionsFeatures;
+  //   } catch (PDOException $e) {
+  //     echo "Error getting rolesPermissionsFeatures: " . $e->getMessage();
+  //   }
+  // }
 }
 
 

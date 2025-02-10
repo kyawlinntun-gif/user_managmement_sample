@@ -1,4 +1,4 @@
-<?php view('auth.layouts.header', ['title' => 'Login Page']); ?>
+<?php view('auth.layouts.header', ['title' => 'User Management Sample | Login Page']); ?>
 <div class="container position-sticky z-index-sticky top-0">
   <div class="row">
     <div class="col-12">
@@ -14,7 +14,7 @@
         <div class="col-lg-4 col-md-8 col-12 mx-auto">
           <div class="card z-index-0 fadeIn3 fadeInBottom">
             <?php if(isset($_SESSION['fail'])): ?>
-              <div class="alert alert-danger text-white"><?= $_SESSION['fail']; ?></div>
+              <div class="alert alert-danger text-white mt-4 mx-3"><?= $_SESSION['fail']; ?></div>
               <?php unset($_SESSION['fail']); ?>
             <?php endif; ?>
             <div class="card-body">

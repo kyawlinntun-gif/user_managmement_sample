@@ -1,0 +1,27 @@
+<?php
+namespace App\Seeder;
+require_once __DIR__ . '/../Models/AdminUser.php';
+use App\Models\AdminUser;
+class AdminUserSeeder
+{
+  public function run()
+  {
+    $admin_users = [
+      ['name' => 'Kyaw Kyaw', 'username' => 'kyawkyaw', 'role_id' => 1, 'phone' => '09796937456', 'email' => 'kyawkyaw@gmail.com', 'address' => 'bahan', 'password' => password_hash('password', PASSWORD_BCRYPT), 'gender' => 1, 'is_active' => 1],
+      ['name' => 'Aung Aung', 'username' => 'aungaung', 'role_id' => 2, 'phone' => '09796937456', 'email' => 'aungaung@gmail.com', 'address' => 'bahan', 'password' => password_hash('password', PASSWORD_BCRYPT), 'gender' => 1, 'is_active' => 1],
+    ];
+    foreach ($admin_users as $new_user) {
+      $admin_user = new AdminUser();
+      $admin_user->name = $new_user['name'];
+      $admin_user->username = $new_user['username'];
+      $admin_user->role_id = $new_user['role_id'];
+      $admin_user->phone = $new_user['phone'];
+      $admin_user->email = $new_user['email'];
+      $admin_user->address = $new_user['address'];
+      $admin_user->password = $new_user['password'];
+      $admin_user->gender = $new_user['gender'];
+      $admin_user->is_active = $new_user['is_active'];
+      $admin_user->save();
+    }
+  }
+}

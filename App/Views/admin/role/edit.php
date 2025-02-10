@@ -14,24 +14,19 @@
           <div class="card-body px-0 pb-2">
             <div class="row">
               <div class="col-md-6 offset-md-2">
-              <form role="form" method="POST" action="/admin/roles/<?=$role['role_id']; ?>">
+              <?php if(isset($_SESSION['fail'])): ?>
+                <div class="alert alert-danger text-white mt-4 mx-3"><?= $_SESSION['fail']; ?></div>
+                <?php unset($_SESSION['fail']); ?>
+              <?php endif; ?>
+              <form role="form" method="POST" action="/admin/roles/<?=$role['id']; ?>">
                   <div class="input-group input-group-outline mb-3">
-                    <input type="text" class="form-control" placeholder="Role Name" value="<?= isset($_SESSION['role_update']['role_name']) ? $_SESSION['role_update']['role_name']  : $role['role_name']; ?>" name="role_name">
+                    <input type="text" class="form-control" placeholder="Role Name" value="<?= isset($_SESSION['role_update']['role_name']) ? $_SESSION['role_update']['role_name']  : $role['name']; ?>" name="role_name">
                   </div>
+                  <?php unset($_SESSION['role_update']); ?>
                   <?php if (getValidationError('role_name', 'role_update')): ?>
                     <span class="alert alert-danger form-control" role="alert">
                       <?= getValidationError('role_name', 'role_update'); ?>
                       <?php unset($_SESSION['errors']['role_update']['role_name']); ?>
-                    </span>
-                  <?php endif; ?>
-                  <div class="input-group input-group-outline mb-3">
-                    <input type="text" class="form-control" placeholder="Description" value="<?= isset($_SESSION['role_update']['description']) ? $_SESSION['role_update']['description']  : $role['description']; ?>" name="description">
-                    <?php unset($_SESSION['role_update']); ?>
-                  </div>
-                  <?php if (getValidationError('description', 'role_update')): ?>
-                    <span class="alert alert-danger form-control" role="alert">
-                      <?= getValidationError('description', 'role_update'); ?>
-                      <?php unset($_SESSION['errors']['role_update']['description']); ?>
                     </span>
                   <?php endif; ?>
                   <div>

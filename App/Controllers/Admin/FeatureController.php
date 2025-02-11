@@ -1,6 +1,9 @@
 <?php
 namespace App\Controllers\Admin;
 
+use App\Middleware\AuthMiddleware;
+use App\Middleware\PermissionMiddleware;
+use App\Middleware\RoleMiddleware;
 use App\Models\AdminUser;
 use App\Models\Feature;
 use App\Models\Permission;
@@ -8,13 +11,14 @@ use App\Validator\Validator;
 
 class FeatureController
 {
+  public function __construct()
+  {
+    AuthMiddleware::check();
+    RoleMiddleware::checkAnyRole();
+  }
   public function index()
   {
-    $admin_user = new AdminUser();
-    if(!$admin_user->hasPermission($_SESSION['user_id'], 'read', 'features')) {
-      http_response_code(403);
-      die("403 - Forbidden - You don't have permissions to access this method!");
-    }
+    PermissionMiddleware::check($_SESSION['user_id'], 'read', 'features');
     $feature = new Feature();
     $features = $feature->getAllFeatures();
     return view('admin.feature.index', ['features' => $features]);
@@ -22,16 +26,13 @@ class FeatureController
 
   public function create()
   {
-    $admin_user = new AdminUser();
-    if(!$admin_user->hasPermission($_SESSION['user_id'], 'create', 'features')) {
-      http_response_code(403);
-      die("403 - Forbidden - You don't have permissions to access this method!");
-    }
+    PermissionMiddleware::check($_SESSION['user_id'], 'create', 'features');
     return view('admin.feature.create');
   }
 
   public function store($request)
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'create', 'features');
     $data = [
       'feature_name' => $request->get('feature_name')
     ];
@@ -58,19 +59,15 @@ class FeatureController
 
   public function edit($request, $response, $id)
   {
-    $admin_user = new AdminUser();
-    if(!$admin_user->hasPermission($_SESSION['user_id'], 'update', 'features')) {
-      http_response_code(403);
-      die("403 - Forbidden - You don't have permissions to access this method!");
-    }
+    PermissionMiddleware::check($_SESSION['user_id'], 'update', 'features');
     $feature = new Feature();
     $feature->id = $id;
     $getFeature = $feature->getFeatureById();
     return view('admin.feature.edit', ['feature' => $getFeature]);
   }
-
   public function update($request, $response, $id)
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'update', 'features');
     $data = [
       'feature_name' => $request->get('feature_name')
     ];
@@ -98,11 +95,7 @@ class FeatureController
 
   public function destroy($id)
   {
-    $admin_user = new AdminUser();
-    if(!$admin_user->hasPermission($_SESSION['user_id'], 'delete', 'features')) {
-      http_response_code(403);
-      die("403 - Forbidden - You don't have permissions to access this method!");
-    }
+    PermissionMiddleware::check($_SESSION['user_id'], 'delete', 'features');
     $feature = new Feature();
     $feature->id = $id;
     if(!$feature->delete()) {

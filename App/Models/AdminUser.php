@@ -203,4 +203,22 @@ class AdminUser
       echo "Error checking on roles: " . $e->getMessage();
     }
   }
+
+  public function getAnyRole()
+  {
+    if (!isset($_SESSION['user_id'])) {
+      return false;
+    }
+    $user_id = (int) $_SESSION['user_id'];
+    try {
+      $stmt = $this->db->prepare("SELECT role_id FROM admin_users WHERE id = :id");
+      $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
+      $stmt->execute();
+      $role_id = $stmt->fetchColumn();
+      return is_null($role_id);
+    } catch (PDOException $e) { 
+      error_log("Error checking roles: " . $e->getMessage());
+    }
+  }
+
 }

@@ -1,18 +1,22 @@
 <?php
 namespace App\Controllers\Admin;
 
+use App\Middleware\AuthMiddleware;
 use App\Models\Role;
 use App\Models\AdminUser;
 use App\Validator\Validator;
+use App\Middleware\PermissionMiddleware;
+use App\Middleware\RoleMiddleware;
 
 class UserController {
+  public function __construct()
+  {
+    AuthMiddleware::check();
+    RoleMiddleware::checkAnyRole();
+  }
   public function index()
   {
-    $admin_user = new AdminUser();
-    if(!$admin_user->hasPermission($_SESSION['user_id'], 'read', 'user')) {
-      http_response_code(403);
-      die("403 - Forbidden - You don't have permissions to access this method!");
-    }
+    PermissionMiddleware::check($_SESSION['user_id'], 'read', 'user');
     $admin_user = new AdminUser();
     $admin_users = $admin_user->getAllUsers();
     return view('admin.user.index', ['admin_users' => $admin_users]);
@@ -20,6 +24,7 @@ class UserController {
 
   public function edit($id)
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'update', 'user');
     $admin_user = new AdminUser();
     if(!$admin_user->hasPermission($_SESSION['user_id'], 'update', 'user')) {
       http_response_code(403);
@@ -34,6 +39,7 @@ class UserController {
 
   public function create()
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'create', 'user');
     $admin_user = new AdminUser();
     if(!$admin_user->hasPermission($_SESSION['user_id'], 'create', 'user')) {
       http_response_code(403);
@@ -46,6 +52,7 @@ class UserController {
 
   public function store($request)
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'create', 'user');
     $data = [
       'name' => $request->get('name'),
       'username' => $request->get('username'),
@@ -60,7 +67,7 @@ class UserController {
     $rules = [
       'name' => 'required|min:2|string|no_special_chars',
       'username' => 'required|min:2|string',
-      'role_id' => 'required|number',
+      'role_id' => 'number',
       'phone' => 'required|phone',
       'email' => 'required|email',
       'password' => 'required|min:8|string',
@@ -96,6 +103,7 @@ class UserController {
 
   public function update($request, $response, $id)
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'update', 'user');
     $data = [
       'name' => $request->get('name'),
       'username' => $request->get('username'),
@@ -109,7 +117,7 @@ class UserController {
     $rules = [
       'name' => 'required|min:2|string|no_special_chars',
       'username' => 'required|min:2|string',
-      'role_id' => 'required|number',
+      'role_id' => 'number',
       'phone' => 'required|phone',
       'email' => 'required|email',
       'address' => 'required|min:5|string',
@@ -143,6 +151,7 @@ class UserController {
 
   public function destroy($request, $response, $id)
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'delete', 'user');
     $admin_user = new AdminUser();
     if(!$admin_user->hasPermission($_SESSION['user_id'], 'delete', 'user')) {
       http_response_code(403);

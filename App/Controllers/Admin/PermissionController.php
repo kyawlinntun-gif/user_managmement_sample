@@ -1,19 +1,23 @@
 <?php
 namespace App\Controllers\Admin;
 
+use App\Middleware\AuthMiddleware;
+use App\Middleware\PermissionMiddleware;
+use App\Middleware\RoleMiddleware;
 use App\Models\Feature;
 use App\Models\AdminUser;
 use App\Models\Permission;
 use App\Validator\Validator;
 
 class PermissionController {
+  public function __construct()
+  {
+    AuthMiddleware::check();
+    RoleMiddleware::checkAnyRole();
+  }
   public function index()
   {
-    $admin_user = new AdminUser();
-    if(!$admin_user->hasPermission($_SESSION['user_id'], 'read', 'permissions')) {
-      http_response_code(403);
-      die("403 - Forbidden - You don't have permissions to access this method!");
-    }
+    PermissionMiddleware::check($_SESSION['user_id'], 'read', 'permissions');
     $permission = new Permission();
     $permissions = $permission->getAllPermissionsFeature();
     return view('admin.permission.index', ['permissions' => $permissions]);
@@ -21,11 +25,7 @@ class PermissionController {
 
   public function create()
   {
-    $admin_user = new AdminUser();
-    if(!$admin_user->hasPermission($_SESSION['user_id'], 'create', 'permissions')) {
-      http_response_code(403);
-      die("403 - Forbidden - You don't have permissions to access this method!");
-    }
+    PermissionMiddleware::check($_SESSION['user_id'], 'create', 'permissions');
     $feature = new Feature();
     $features = $feature->getAllFeatures();
     return view('admin.permission.create', ['features' => $features]);
@@ -33,6 +33,7 @@ class PermissionController {
 
   public function store($request)
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'create', 'permissions');
     $data = [
       'permission_name' => $request->get('permission_name'),
       'feature_id' => $request->get('feature_id')
@@ -62,11 +63,7 @@ class PermissionController {
 
   public function edit($request, $response, $id)
   {
-    $admin_user = new AdminUser();
-    if(!$admin_user->hasPermission($_SESSION['user_id'], 'update', 'permissions')) {
-      http_response_code(403);
-      die("403 - Forbidden - You don't have permissions to access this method!");
-    }
+    PermissionMiddleware::check($_SESSION['user_id'], 'update', 'permissions');
     $permission = new Permission();
     $permission->id = $id;
     $getPermission = $permission->getPermissionById();
@@ -77,6 +74,7 @@ class PermissionController {
 
   public function update($request, $response, $id)
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'update', 'permissions');
     $data = [
       'permission_name' => $request->get('permission_name'),
       'feature_id' => $request->get('feature_id')
@@ -107,11 +105,7 @@ class PermissionController {
 
   public function destroy($id)
   {
-    $admin_user = new AdminUser();
-    if(!$admin_user->hasPermission($_SESSION['user_id'], 'delete', 'permissions')) {
-      http_response_code(403);
-      die("403 - Forbidden - You don't have permissions to access this method!");
-    }
+    PermissionMiddleware::check($_SESSION['user_id'], 'delete', 'permissions');
     $permission = new Permission();
     $permission->id = $id;
     if(!$permission->delete()) {

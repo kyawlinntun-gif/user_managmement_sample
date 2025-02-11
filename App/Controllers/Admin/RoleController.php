@@ -1,21 +1,25 @@
 <?php
 namespace App\Controllers\Admin;
 
+use App\Middleware\AuthMiddleware;
 use App\Models\Role;
 use App\Models\Feature;
 use App\Models\AdminUser;
 use App\Models\Permission;
 use App\Validator\Validator;
 use App\Models\RolePermission;
+use App\Middleware\PermissionMiddleware;
+use App\Middleware\RoleMiddleware;
 
 class RoleController {
+  public function __construct()
+  {
+    AuthMiddleware::check();
+    RoleMiddleware::checkAnyRole();
+  }
   public function index()
   {
-    $admin_user = new AdminUser();
-    if(!$admin_user->hasPermission($_SESSION['user_id'], 'read', 'role')) {
-      http_response_code(403);
-      die("403 - Forbidden - You don't have permissions to access this method!");
-    }
+    PermissionMiddleware::check($_SESSION['user_id'], 'read', 'role');
     $role = new Role();
     $roles = $role->getAllRoles();
     return view('admin.role.index', ['roles' => $roles]);
@@ -23,16 +27,13 @@ class RoleController {
 
   public function create()
   {
-    $admin_user = new AdminUser();
-    if(!$admin_user->hasPermission($_SESSION['user_id'], 'create', 'role')) {
-      http_response_code(403);
-      die("403 - Forbidden - You don't have permissions to access this method!");
-    }
+    PermissionMiddleware::check($_SESSION['user_id'], 'create', 'role');
     return view('admin.role.create');
   }
 
   public function store($request)
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'create', 'role');
     $data = [
       'role_name' => $request->get('role_name')
     ];
@@ -59,11 +60,7 @@ class RoleController {
 
   public function edit($request, $response, $id)
   {
-    $admin_user = new AdminUser();
-    if(!$admin_user->hasPermission($_SESSION['user_id'], 'update', 'role')) {
-      http_response_code(403);
-      die("403 - Forbidden - You don't have permissions to access this method!");
-    }
+    PermissionMiddleware::check($_SESSION['user_id'], 'update', 'role');
     $role = new Role();
     $role->id = $id;
     $getRole = $role->getRoleById();
@@ -72,6 +69,7 @@ class RoleController {
 
   public function update($request, $response, $id)
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'update', 'role');
     $data = [
       'role_name' => $request->get('role_name'),
     ];
@@ -99,11 +97,7 @@ class RoleController {
 
   public function destroy($request, $response, $id)
   {
-    $admin_user = new AdminUser();
-    if(!$admin_user->hasPermission($_SESSION['user_id'], 'delete', 'role')) {
-      http_response_code(403);
-      die("403 - Forbidden - You don't have permissions to access this method!");
-    }
+    PermissionMiddleware::check($_SESSION['user_id'], 'delete', 'role');
     $role = new Role();
     $role->id = $id;
     if(!$role->delete()) {

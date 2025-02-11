@@ -84,6 +84,7 @@ class Role
     }
   }
 
+
   // public function delete()
   // {
   //   try {

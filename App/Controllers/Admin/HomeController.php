@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers\Admin;
 
+use App\Middleware\AuthMiddleware;
+use App\Middleware\RoleMiddleware;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Feature;
@@ -9,6 +11,11 @@ use App\Models\Permission;
 
 class HomeController
 {
+  public function __construct()
+  {
+    AuthMiddleware::check();
+    RoleMiddleware::checkAnyRole();
+  }
   public function index()
   {
     $admin_user = new AdminUser();

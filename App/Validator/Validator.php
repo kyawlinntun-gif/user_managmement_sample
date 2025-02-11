@@ -54,15 +54,17 @@ class Validator
         }
         break;
       case 'number':
-        if (is_array($value)) {
-          foreach ($value as $item) {
-              if (!is_numeric($item)) {
-                  $this->addError($field, "All values must be numbers.");
-                  break;
-              }
+        if(!empty($value)) {
+          if (is_array($value)) {
+            foreach ($value as $item) {
+                if (!is_numeric($item)) {
+                    $this->addError($field, "All values must be numbers.");
+                    break;
+                }
+            }
+          } elseif (!is_numeric($value)) {
+              $this->addError($field, "This field must be a number.");
           }
-        } elseif (!is_numeric($value)) {
-            $this->addError($field, "This field must be a number.");
         }
         break;
       case 'boolean':

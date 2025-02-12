@@ -32,6 +32,48 @@ $getPermissionForUser = new AdminUser();
                   </tr>
                 </thead>
                 <tbody>
+                <?php if(count($products) > 0): ?>
+                    <?php foreach($products as $product): ?>
+                      <tr>
+                        <td>
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <h6 class="mb-0 text-sm"><?= ucfirst($product['name']); ?></h6>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <p class="mb-0 text-sm"><?= ucfirst($product['description']); ?></p>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <img src="<?= assets('/assets/upload/' . $product['image']); ?>" alt="<?= $product['name']; ?>">
+                            </div>
+                          </div>
+                        </td>
+                        <td class="align-middle">
+                          <?php if($getPermissionForUser->hasPermission($_SESSION['user_id'], 'update', 'product')): ?>
+                          <a href="/admin/products/<?=$product['id']?>" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit role">
+                            Edit
+                          </a>
+                          <?php endif; ?>
+                          <?php if($getPermissionForUser->hasPermission($_SESSION['user_id'], 'delete', 'product')): ?>
+                          <span> | </span>
+                          <a href="#" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Delete role" onclick="event.preventDefault(); document.getElementById('deleteProduct<?=$product['id'];?>').submit();">
+                            Delete
+                          </a>
+                          <form action="/admin/products/<?= $product['id']; ?>/delete" method="POST" id="deleteProduct<?=$product['id'];?>">
+                          </form>
+                          <?php endif; ?>
+                        </td>
+                      </tr>
+                    <?php endforeach; ?>
+                  <?php endif; ?>
                 </tbody>
               </table>
             </div>

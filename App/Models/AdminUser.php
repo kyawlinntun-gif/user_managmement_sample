@@ -143,7 +143,7 @@ class AdminUser
   {
     try {
       foreach ($roles as $user_id => $role_id) {
-        $stmt = $this->db->prepare("UPDATE admin_users SET role_id = :role_id WHERE id = :id");
+        $stmt = $this->db->prepare("UPDATE admin_users SET role_id = :role_id, updated_at = now() WHERE id = :id");
         $stmt->bindParam(":role_id", $role_id, PDO::PARAM_INT);
         $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
         $stmt->execute();

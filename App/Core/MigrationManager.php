@@ -12,6 +12,7 @@ class MigrationManager
     'CreateFeatureTable.php',
     'CreatePermissionTable.php',
     'CreateRolePermissionTable.php',
+    'CreateProductTable.php'
   ];
   
   public function __construct($pdo)

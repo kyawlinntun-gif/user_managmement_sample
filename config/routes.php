@@ -53,7 +53,10 @@ return [
         ],
         '/admin/products/create' => [
             'action' => 'App\\Controllers\\Admin\\ProductController@create',
-        ]
+        ],
+        '/admin/products/{id}' => [
+            'action' => 'App\\Controllers\\Admin\\ProductController@edit'
+        ],
     ],
     'POST' => [
         '/login' => [
@@ -98,6 +101,15 @@ return [
         ],
         '/admin/features/{id}/delete' => [
             'action' => 'App\\Controllers\\Admin\\FeatureController@destroy',
+        ],
+        '/admin/products/store' => [
+            'action' => 'App\\Controllers\\Admin\\ProductController@store',
+        ],
+        '/admin/products/{id}' => [
+            'action' => 'App\\Controllers\\Admin\\ProductController@update'
+        ],
+        '/admin/products/{id}/delete' => [
+            'action' => 'App\\Controllers\\Admin\\ProductController@destroy'
         ],
         '/admin/update-all' => [
             'action' => 'App\Controllers\\Admin\\HomeController@updateAllData',

@@ -18,9 +18,9 @@
                 <div class="alert alert-danger text-white mt-4 mx-3"><?= $_SESSION['fail']; ?></div>
                 <?php unset($_SESSION['fail']); ?>
               <?php endif; ?>
-              <form role="form" method="POST" action="/admin/products/create" enctype="multipart/form-data">
+              <form role="form" method="POST" action="/admin/products/store" enctype="multipart/form-data">
                 <div class="input-group input-group-outline mb-3">
-                  <input type="text" class="form-control" placeholder="Post Name" value="<?= isset($_SESSION['product_create']['product_name']) ? $_SESSION['product_create']['product_name']  : ''; ?>" name="product_name">
+                  <input type="text" class="form-control" placeholder="Product Name" value="<?= isset($_SESSION['product_create']['product_name']) ? $_SESSION['product_create']['product_name']  : ''; ?>" name="product_name">
                 </div>
                 <?php if (getValidationError('product_name', 'product_create')): ?>
                   <span class="alert alert-danger form-control" role="alert">
@@ -39,12 +39,12 @@
                 <?php endif; ?>
                 <div class="input-group input-group-outline mb-3">
                   <input type="file" name="image" id="image" class="form-control">
-                  <?php unset($_SESSION['product_image']); ?>
+                  <?php unset($_SESSION['product_create']); ?>
                 </div>
-                <?php if (getValidationError('image', 'product_image')): ?>
+                <?php if (getValidationError('image', 'product_create')): ?>
                   <span class="alert alert-danger form-control" role="alert">
-                    <?= getValidationError('image', 'product_image'); ?>
-                    <?php unset($_SESSION['errors']['product_image']['image']); ?>
+                    <?= getValidationError('image', 'product_create'); ?>
+                    <?php unset($_SESSION['errors']['product_create']['image']); ?>
                   </span>
                 <?php endif; ?>
                 <div>

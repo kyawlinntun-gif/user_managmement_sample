@@ -14,6 +14,7 @@ use App\Models\AdminUser;
           <div class="card-body">
             <form action="/admin/update-all" method="POST">
               <?php foreach($admin_users as $admin_user): ?>
+                <?php if(!is_null($admin_user['role_id'])): ?>
                 <h5>
                   <?= $admin_user['admin_user_name'] ?> 
                   (Role: 
@@ -24,61 +25,63 @@ use App\Models\AdminUser;
                         </option>
                     <?php endforeach; ?>
                   </select>)
-              </h5>
-              <table border="1" cellpadding="5" cellspacing="0">
-                <thead>
-                  <tr>
-                      <th>Feature</th>
-                      <th>Permissions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php foreach ($features as $feature): ?>
+                </h5>
+                <table border="1" cellpadding="5" cellspacing="0">
+                  <thead>
                     <tr>
-                        <td>
-                          <?php 
-                            $featureChecked = false;
-                            $adminUserModel = new AdminUser();
-                            $admin_user_permissions = $adminUserModel->getAdminUsersPermissions();
-                            $userPermissions = [];
-                            foreach($admin_user_permissions as $user) {
-                              $userPermissions[$user['admin_user_id']][] = $user['permission_id'];
-                            }
-                            foreach ($permissions as $permission) {
-                              if ($permission['feature_id'] == $feature['id'] && in_array($permission['id'], $userPermissions[$admin_user['admin_user_id']] ?? [])) {
-                                $featureChecked = true;
-                                break;
-                              }
-                            }
-                            ?>
-                          <label>
-                              <input type="checkbox" class="feature-checkbox" 
-                                    name="features[<?= $admin_user['admin_user_id'] ?>][]" 
-                                    value="<?= $feature['id'] ?>"
-                                    <?= $featureChecked ? 'checked' : '' ?> data-user="<?= $admin_user['admin_user_id'] ?>">
-                              <?= $feature['name'] ?>
-                          </label>
-                        </td>
-                        <td>
-                            <?php foreach ($permissions as $permission): ?>
-                                <?php if ($permission['feature_id'] === $feature['id']): ?>
-                                    <label>
-                                        <input type="checkbox" class="permission-checkbox" 
-                                              name="permissions[<?= $admin_user['admin_user_id'] ?>][]" 
-                                              value="<?= $permission['id'] ?>"
-                                              <?= in_array($permission['id'], $userPermissions[$admin_user['admin_user_id']] ?? []) ? 'checked' : '' ?>
-                                              data-feature="<?= $feature['id']; ?>" data-user="<?= $admin_user['admin_user_id'] ?>">
-                                        <?= $permission['name'] ?>
-                                    </label>
-                                <?php endif; ?>
-                            <?php endforeach; ?>
-                        </td>
+                        <th>Feature</th>
+                        <th>Permissions</th>
                     </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
-              <hr>
-              <?php endforeach; ?>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($features as $feature): ?>
+                      <tr>
+                          <td>
+                            <?php 
+                              $featureChecked = false;
+                              $adminUserModel = new AdminUser();
+                              $admin_user_permissions = $adminUserModel->getAdminUsersPermissions();
+                              $userPermissions = [];
+                              foreach($admin_user_permissions as $user) {
+                                $userPermissions[$user['admin_user_id']][] = $user['permission_id'];
+                              }
+                              foreach ($permissions as $permission) {
+                                if ($permission['feature_id'] == $feature['id'] && in_array($permission['id'], $userPermissions[$admin_user['admin_user_id']] ?? [])) {
+                                  $featureChecked = true;
+                                  break;
+                                }
+                              }
+                              ?>
+                            <label>
+                                <input type="checkbox" class="feature-checkbox" 
+                                      name="features[<?= $admin_user['admin_user_id'] ?>][]" 
+                                      value="<?= $feature['id'] ?>"
+                                      <?= $featureChecked ? 'checked' : '' ?> data-user="<?= $admin_user['admin_user_id'] ?>">
+                                <?= $feature['name'] ?>
+                            </label>
+                          </td>
+                          <td>
+                              <?php foreach ($permissions as $permission): ?>
+                                  <?php if ($permission['feature_id'] === $feature['id']): ?>
+                                      <label>
+                                          <input type="checkbox" class="permission-checkbox" 
+                                                name="permissions[<?= $admin_user['admin_user_id'] ?>][]" 
+                                                value="<?= $permission['id'] ?>"
+                                                <?= in_array($permission['id'], $userPermissions[$admin_user['admin_user_id']] ?? []) ? 'checked' : '' ?>
+                                                data-feature="<?= $feature['id']; ?>" data-user="<?= $admin_user['admin_user_id'] ?>">
+                                          <?= $permission['name'] ?>
+                                      </label>
+                                  <?php endif; ?>
+                              <?php endforeach; ?>
+                          </td>
+                      </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+                <hr>
+                <?php endif; ?>
+                <?php endforeach; ?>
+                <hr>
               <button type="submit">Save Changes</button>
             </form>
           </div>

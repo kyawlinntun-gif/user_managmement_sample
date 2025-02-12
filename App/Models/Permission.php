@@ -87,7 +87,7 @@ class Permission
         if ($stmt->fetchColumn() > 0) {
             return false;
         }
-        $stmt = $this->db->prepare("UPDATE permissions SET name = :name, feature_id = :feature_id WHERE id = :id");
+        $stmt = $this->db->prepare("UPDATE permissions SET name = :name, feature_id = :feature_id, updated_at = now() WHERE id = :id");
         $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
         $stmt->bindParam(":name", $this->name, PDO::PARAM_STR);
         $stmt->bindParam(":feature_id", $this->feature_id, PDO::PARAM_INT);

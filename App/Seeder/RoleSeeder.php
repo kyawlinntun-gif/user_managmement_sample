@@ -9,7 +9,8 @@ class RoleSeeder
     $roles = [
       ['name' => 'admin'],
       ['name' => 'operator'],
-      ['name' => 'cashier']
+      ['name' => 'cashier'],
+      ['name' => 'manage'],
     ];
     foreach ($roles as $new_role) {
       $role = new Role();

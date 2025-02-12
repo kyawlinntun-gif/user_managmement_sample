@@ -4,10 +4,25 @@
 }
 /* End Navbar */
 /* Home */
-.home .card {
+.home .content {
   margin-top: 100px;
-  width: 25%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.home .content .card {
+  display: inline-block;
+  width: 20%;
   border-radius: 10px;
   padding: 10px;
+  margin-right: 10px;
+  margin-bottom: 20px;
+}
+.home .content .card:nth-child(4n) {
+  margin-right: 0;
+}
+.home .content .card img {
+  width: 100%;
+  max-width: 250px;
 }
 /* End home */

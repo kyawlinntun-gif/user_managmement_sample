@@ -10,6 +10,8 @@ class FeatureSeeder
       ['name' => 'user'],
       ['name' => 'role'],
       ['name' => 'product'],
+      ['name' => 'permissions'],
+      ['name' => 'features'],
     ];
     foreach($features as $new_feature) {
       $feature = new Feature();

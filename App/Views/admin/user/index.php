@@ -69,6 +69,7 @@ $getPermissionForUser = new AdminUser();
                               Edit
                             </a>
                             <?php endif; ?>
+                            <?php if($admin_user['role_name'] !== 'admin'): ?>
                             <?php if($_SESSION['user_id'] !== $admin_user['admin_user_id']): ?>
                             <?php if($getPermissionForUser->hasPermission($_SESSION['user_id'], 'delete', 'user')): ?>
                             <span> | </span>
@@ -77,6 +78,7 @@ $getPermissionForUser = new AdminUser();
                             </a>
                             <form action="/admin/users/<?= $admin_user['admin_user_id']; ?>/delete" method="POST" id="deleteAdminUser<?=$admin_user['admin_user_id'];?>" class="d-none">
                             </form>
+                            <?php endif; ?>
                             <?php endif; ?>
                             <?php endif; ?>
                           </td>

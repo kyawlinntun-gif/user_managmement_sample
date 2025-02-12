@@ -16,7 +16,7 @@ class CreateProductTable
 
  public function down($pdo)
  {
-  $sql = "DROP TABLE IF EXISTS features";
+  $sql = "DROP TABLE IF EXISTS products";
   $pdo->exec($sql);
  }
 }

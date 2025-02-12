@@ -11,7 +11,7 @@ MySQL (or any other supported database)
 Installation Steps
 1. Clone the repository
 Clone the project from GitHub:
-git clone https://github.com/kyawlinntun-gif/user_role_management.git
+git clone https://github.com/kyawlinntun-gif/user_managmement_sample.git
 
 2. Create a database
 Create a new database in MySQL (or your preferred database server).
@@ -32,5 +32,10 @@ Start the development server:
 php -S localhost:90 -t public
 The application will be accessible at http://localhost:90.
 
-// Modified
-need to modified profile
+5. Role for users
+  5.1 Kyaw Kyaw is Admin.
+  5.2 Aung Aung is Operator.
+  5.3 Mg Mg is managing.
+  5.4 Aye Aye don't have role.
+
+  First, login with kyaw kyaw and go to dashboard after than you will see the all roles and permissions and features.  

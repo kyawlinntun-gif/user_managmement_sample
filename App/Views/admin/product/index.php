@@ -52,7 +52,7 @@ $getPermissionForUser = new AdminUser();
                         <td>
                           <div class="d-flex px-2 py-1">
                             <div class="d-flex flex-column justify-content-center">
-                              <img src="<?= assets('/assets/upload/' . $product['image']); ?>" alt="<?= $product['name']; ?>">
+                              <img src="<?= assets('/assets/upload/' . $product['image']); ?>" alt="<?= $product['name']; ?>" style="max-width: 100px;">
                             </div>
                           </div>
                         </td>

@@ -4,9 +4,8 @@ class CreateRoleTable
   public function up($pdo)
   {
     $sql = "CREATE TABLE IF NOT EXISTS roles (
-      role_id INT PRIMARY KEY AUTO_INCREMENT,
-      role_name VARCHAR(100) UNIQUE NOT NULL,
-      description TEXT,
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      name VARCHAR(100) UNIQUE NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";

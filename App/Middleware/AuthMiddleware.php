@@ -11,8 +11,17 @@ class AuthMiddleware
       session_start();
     }
     if (!isset($_SESSION['user_id'])) {
-      // http_response_code(401);
-      // die("401 Unauthorized - Please login.");
+      header("location: /login");
+      exit();
+    }
+  }
+
+  public static function check()
+  {
+    if (session_status() === PHP_SESSION_NONE) {
+      session_start();
+    }
+    if (!isset($_SESSION['user_id'])) {
       header("location: /login");
       exit();
     }

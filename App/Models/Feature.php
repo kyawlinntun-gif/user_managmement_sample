@@ -6,8 +6,8 @@ use PDOException;
 class Feature
 {
   private $db;
-  public $feature_name;
-  public $description;
+  public $id;
+  public $name;
 
   public function __construct()
   {
@@ -18,11 +18,13 @@ class Feature
   public function save()
   {
     try {
-      $stmt = $this->db->prepare("INSERT INTO features (feature_name, description) VALUES (:feature_name, :description)");
-      $stmt->bindParam(":feature_name", $this->feature_name);
-      $stmt->bindParam(":description", $this->description);
-      $stmt->execute();
+      $stmt = $this->db->prepare("INSERT INTO features (name) VALUES (:name)");
+      $stmt->bindParam(":name", $this->name, PDO::PARAM_STR);
+      return $stmt->execute();
     } catch (PDOException $e) {
+      if ($e->getCode() == 23000) {
+        return false;
+      }
       echo "Error inserting features: " . $e->getMessage();
     }
   }
@@ -30,7 +32,7 @@ class Feature
   public function getAllFeatures()
   {
     try {
-      $stmt = $this->db->prepare("SELECT feature_id, feature_name, description FROM features");
+      $stmt = $this->db->prepare("SELECT id, name FROM features");
       $stmt->execute();
       $features = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $features;
@@ -39,72 +41,51 @@ class Feature
     }
   }
 
-  public function getFeatureById($id)
+  public function getFeatureById()
   {
     try {
-      $stmt = $this->db->prepare("SELECT feature_id, feature_name, description FROM features WHERE feature_id = :id");
-      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+      $stmt = $this->db->prepare("SELECT id, name FROM features WHERE id = :id");
+      $stmt->bindParam(':id', $this->id);
       $stmt->execute();
-      $feature = $stmt->fetch(PDO::FETCH_ASSOC);
-      return $feature;
+      $features = $stmt->fetch(PDO::FETCH_ASSOC);
+      return $features;
     } catch (PDOException $e) {
-      echo "Error getting feature: " . $e->getMessage();
+      echo "Error getting features: " . $e->getMessage();
     }
   }
 
-  public function update($id)
+  public function update()
   {
     try {
-      $stmt = $this->db->prepare("UPDATE features SET feature_name = :feature_name, description = :description WHERE feature_id = :id");
-      $stmt->bindParam(":feature_name", $this->feature_name);
-      $stmt->bindParam(":description", $this->description);
-      $stmt->bindParam(":id", $id);
-      $stmt->execute();
+      $stmt = $this->db->prepare("UPDATE features SET name = :name, updated_at = now() WHERE id = :id");
+      $stmt->bindParam(':id', $this->id);
+      $stmt->bindParam(':name', $this->name);
+      return $stmt->execute();
     } catch (PDOException $e) {
-      echo "Error inserting feature: " . $e->getMessage();
-    }
-  }
-  
-  public function destroy($id)
-  {
-    try {
-      $stmt = $this->db->prepare("DELETE FROM features WHERE feature_id = :id");
-      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-      $stmt->execute();
-    } catch (PDOException $e) {
-      echo "Error deleting feature: " . $e->getMessage();
+      if ($e->getCode() == 23000) {
+        return false;
+      }
+      echo "Error getting features: " . $e->getMessage();
     }
   }
 
-  public function getPermissionsByFeature($id)
-  {
-    try { 
-      $stmt = $this->db->prepare("SELECT permissions.permission_id FROM features LEFT JOIN permission_features ON features.feature_id = permission_features.feature_id LEFT JOIN permissions ON permission_features.permission_id = permissions.permission_id WHERE features.feature_id = :id");
-      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-      $stmt->execute();
-      $roles = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      return $roles;
-    } catch (PDOException $e) {
-      echo "Error fetching permissions by feature: " . $e->getMessage();
-    }
-  }
-
-  public function updateFeaturePermissionData($permissions, $feature_id)
+  function delete() 
   {
     try {
-        $stmt = $this->db->prepare("DELETE FROM permission_features WHERE feature_id = :feature_id");
-        $stmt->bindParam(':feature_id', $feature_id, PDO::PARAM_INT);
-        $stmt->execute();
-
-        $stmt = $this->db->prepare("INSERT INTO permission_features (permission_id, feature_id) VALUES (:permission_id, :feature_id)");
-        foreach ($permissions as $permission_id) {
-          $stmt->bindParam(':permission_id', $permission_id, PDO::PARAM_INT);
-          $stmt->bindParam(':feature_id', $feature_id, PDO::PARAM_INT);
-          $stmt->execute();
-        }
+    $stmt = $this->db->prepare("SELECT COUNT(*) FROM permissions WHERE feature_id = :id");
+    $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+    $stmt->execute();
+    $count = $stmt->fetchColumn();
+    if ($count > 0) {
+        return false;
+    }
+    $stmt = $this->db->prepare("DELETE FROM features WHERE id = :id");
+    $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+    return $stmt->execute();
     } catch (PDOException $e) {
-      echo "Error updating feature permissions: " . $e->getMessage();
-      die();
+        echo "Error deleting feature: " . $e->getMessage();
+        return false;
     }
   }
+
 }

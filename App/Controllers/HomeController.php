@@ -1,13 +1,18 @@
 <?php
 namespace App\Controllers;
 
-use App\Models\Post;
+use App\Middleware\AuthMiddleware;
+use App\Models\Product;
 
 class HomeController {
+    public function __construct()
+    {
+        AuthMiddleware::check();
+    }
     public function index()
     {
-        $post = new Post();
-        $posts = $post->getAllPosts();
-        return view('home', ['posts' => $posts]);
+        $product = new Product();
+        $products = $product->getAllProducts();
+        return view('home', ['products' => $products]);
     }
 }

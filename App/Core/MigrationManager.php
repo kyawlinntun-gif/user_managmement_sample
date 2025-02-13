@@ -8,12 +8,11 @@ class MigrationManager
 
   public $migrateFiles = [
     'CreateRoleTable.php',
-    'CreateUserTable.php',
-    'CreatePermissionTable.php',
+    'CreateAdminUserTable.php',
     'CreateFeatureTable.php',
+    'CreatePermissionTable.php',
     'CreateRolePermissionTable.php',
-    'CreatePermissionFeatureTable.php',
-    'CreatePostTable.php'
+    'CreateProductTable.php'
   ];
   
   public function __construct($pdo)
@@ -36,10 +35,9 @@ class MigrationManager
 
   public function rollback()
   {
-    // For foreign key dropdown
-    $migrateFiles = array_reverse($this->migrateFiles);
+    $this->pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
 
-    foreach ($migrateFiles as $file) {
+    foreach ($this->migrateFiles as $file) {
       if ($file !== '.' && $file !== '..') {
         include_once $this->migrationPath . $file;
         $className = pathinfo($file, PATHINFO_FILENAME);

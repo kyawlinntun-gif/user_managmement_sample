@@ -1,39 +1,44 @@
 <?php
 namespace App\Controllers\Admin;
 
-use App\Models\Permission;
+use App\Middleware\AuthMiddleware;
 use App\Models\Role;
+use App\Models\Feature;
+use App\Models\AdminUser;
+use App\Models\Permission;
 use App\Validator\Validator;
+use App\Models\RolePermission;
+use App\Middleware\PermissionMiddleware;
+use App\Middleware\RoleMiddleware;
 
 class RoleController {
+  public function __construct()
+  {
+    AuthMiddleware::check();
+    RoleMiddleware::checkAnyRole();
+  }
   public function index()
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'read', 'role');
     $role = new Role();
     $roles = $role->getAllRoles();
     return view('admin.role.index', ['roles' => $roles]);
   }
 
-  public function edit($request, $response, $id)
-  {
-    $role = new Role();
-    $getRole = $role->getRoleById($id);
-    return view('admin.role.edit', ['role' => $getRole]);
-  }
-
   public function create()
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'create', 'role');
     return view('admin.role.create');
   }
 
   public function store($request)
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'create', 'role');
     $data = [
-      'role_name' => $request->get('role_name'),
-      'description' => $request->get('description')
+      'role_name' => $request->get('role_name')
     ];
     $rules = [
       'role_name' => 'required|min:3|string|no_special_chars',
-      'description' => 'required|min:3|string'
     ];
     $validator = new Validator($data);
     if(!$validator->validate($rules)) {
@@ -43,22 +48,33 @@ class RoleController {
       exit();
     }
     $role = new Role();
-    $role->role_name = htmlspecialchars($data['role_name']);
-    $role->description = htmlspecialchars($data['description']);
-    $role->save();
+    $role->name = htmlspecialchars($data['role_name']);
+    if(!$role->save()) {
+      $_SESSION['fail'] = "This role was already created!";
+      header("Location: " . $_SERVER['HTTP_REFERER']);
+      exit();
+    }
     header("location: /admin/roles");
     exit();
   }
 
+  public function edit($request, $response, $id)
+  {
+    PermissionMiddleware::check($_SESSION['user_id'], 'update', 'role');
+    $role = new Role();
+    $role->id = $id;
+    $getRole = $role->getRoleById();
+    return view('admin.role.edit', ['role' => $getRole]);
+  }
+
   public function update($request, $response, $id)
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'update', 'role');
     $data = [
       'role_name' => $request->get('role_name'),
-      'description' => $request->get('description')
     ];
     $rules  = [
       'role_name' => 'required|min:3|string|no_special_chars',
-      'description' => 'required|min:3|string|no_special_chars'
     ];
     $validator = new Validator($data);
     if(!$validator->validate($rules)) {
@@ -68,44 +84,28 @@ class RoleController {
       exit();
     }
     $role = new Role();
-    $role->role_name = htmlspecialchars($data['role_name']);
-    $role->description = htmlspecialchars($data['description']);
-    $role->update($id);
+    $role->id = $id;
+    $role->name = htmlspecialchars($data['role_name']);
+    if(!$role->update()) {
+      $_SESSION['fail'] = "This role was already updated!";
+      header("Location: " . $_SERVER['HTTP_REFERER']);
+      exit();
+    }
     header("location: /admin/roles");
     exit();
   }
 
   public function destroy($request, $response, $id)
   {
+    PermissionMiddleware::check($_SESSION['user_id'], 'delete', 'role');
     $role = new Role();
-    $role->destroy($id);
-    header("location: /admin/roles");
-    exit();
-  }
-
-  public function manageRolePermission($request, $response, $id)
-  {
-    $permission = new Permission();
-    $permissions = $permission->getAllPermissions();
-
-    $role = new Role();
-    $permissionRole = $role->getPermissionsByRole($id);
-    $permissionByRole = [];
-    foreach($permissionRole as $permission) {
-      $permissionByRole[] = $permission['permission_id'];
+    $role->id = $id;
+    if(!$role->delete()) {
+      $_SESSION['fail'] = "You need to delete user related with this role!";
+      header("Location: " . $_SERVER['HTTP_REFERER']);
+      exit();
     }
-
-    $getRole = $role->getRoleById($id);
-
-    return view('admin.role.manage', ['permissions' => $permissions, 'permissionByRole' => $permissionByRole, 'role' => $getRole]);
-  }
-
-  public function updateRolePermission($request, $response, $id)
-  {
-    $permissions = $request->get('permissions');
-    $role = new Role();
-    $role->updateRolePermissionsData($id, $permissions);
-    header("Location: " . $_SERVER['HTTP_REFERER']);
+    header("location: /admin/roles");
     exit();
   }
 }

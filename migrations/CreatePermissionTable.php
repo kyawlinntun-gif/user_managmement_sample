@@ -4,9 +4,10 @@ class CreatePermissionTable
   public function up($pdo)
   {
     $sql = "CREATE TABLE IF NOT EXISTS permissions (
-      permission_id INT PRIMARY KEY AUTO_INCREMENT,
-      permission_name VARCHAR(100) UNIQUE NOT NULL,
-      description TEXT,
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      name VARCHAR(100) NOT NULL,
+      feature_id INT,
+      FOREIGN KEY (feature_id) REFERENCES features(id),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";

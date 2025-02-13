@@ -35,7 +35,11 @@ class Validator
   {
     switch ($rule) {
       case 'required':
-        if (empty($value)) {
+        if (is_array($value)) {
+          if (empty($value) || count($value) === 0) {
+              $this->addError($field, "At least one option must be selected.");
+          }
+        } elseif (!isset($value) || $value === '') {
           $this->addError($field, "This field is required.");
         }
         break;
@@ -49,9 +53,33 @@ class Validator
           $this->addError($field, "This field must be a valid string.");
         }
         break;
+      case 'number':
+        if(!empty($value)) {
+          if (is_array($value)) {
+            foreach ($value as $item) {
+                if (!is_numeric($item)) {
+                    $this->addError($field, "All values must be numbers.");
+                    break;
+                }
+            }
+          } elseif (!is_numeric($value)) {
+              $this->addError($field, "This field must be a number.");
+          }
+        }
+        break;
+      case 'boolean':
+        if (!in_array($value, [0, 1, '0', '1', true, false], true)) {
+          $this->addError($field, "This field must be a boolean.");
+        }
+          break;
       case 'email':
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
           $this->addError($field, "This field must be a valid email address.");
+        }
+        break;
+      case 'phone':
+        if (!preg_match('/^\d{7,11}$/', $value)) {
+          $this->addError($field, "Invalid phone number.");
         }
         break;
       case 'confirmed':

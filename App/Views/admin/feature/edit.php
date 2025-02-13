@@ -1,4 +1,4 @@
-<?php view('admin.layouts.header', ['title' => 'All Features / Edit feature']) ?>
+<?php view('admin.layouts.header', ['title' => 'User management system | Edit feature']) ?>
 <?php view('admin.layouts.asidebar') ?>
 <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
   <?php view('admin.layouts.navbar') ?>
@@ -14,9 +14,13 @@
           <div class="card-body px-0 pb-2">
             <div class="row">
               <div class="col-md-6 offset-md-2">
-              <form role="form" method="POST" action="/admin/features/<?= $feature['feature_id']; ?>">
+              <?php if(isset($_SESSION['fail'])): ?>
+              <div class="alert alert-danger text-white mt-4 mx-3"><?= $_SESSION['fail']; ?></div>
+                <?php unset($_SESSION['fail']); ?>
+              <?php endif; ?>
+              <form role="form" method="POST" action="/admin/features/<?= $feature['id']; ?>">
                   <div class="input-group input-group-outline mb-3">
-                    <input type="text" class="form-control" placeholder="Feature Name" value="<?= isset($_SESSION['feature_update']['feature_name']) ? $_SESSION['feature_update']['feature_name']  : $feature['feature_name']; ?>" name="feature_name">
+                    <input type="text" class="form-control" placeholder="Feature Name" value="<?= isset($_SESSION['feature_update']['feature_name']) ? $_SESSION['feature_update']['feature_name']  : $feature['name']; ?>" name="feature_name">
                   </div>
                   <?php if (getValidationError('feature_name', 'feature_update')): ?>
                     <span class="alert alert-danger form-control" role="alert">
@@ -24,16 +28,7 @@
                       <?php unset($_SESSION['errors']['feature_update']['feature_name']); ?>
                     </span>
                   <?php endif; ?>
-                  <div class="input-group input-group-outline mb-3">
-                    <input type="text" class="form-control" placeholder="Description" value="<?= isset($_SESSION['feature_update']['description']) ? $_SESSION['feature_update']['description']  : $feature['description']; ?>" name="description">
-                    <?php unset($_SESSION['feature_update']); ?>
-                  </div>
-                  <?php if (getValidationError('description', 'feature_update')): ?>
-                    <span class="alert alert-danger form-control" role="alert">
-                      <?= getValidationError('description', 'feature_update'); ?>
-                      <?php unset($_SESSION['errors']['feature_update']['description']); ?>
-                    </span>
-                  <?php endif; ?>
+                  <?php unset($_SESSION['feature_update']); ?>
                   <div>
                     <button type="submit" class="btn btn-lg bg-gradient-dark btn-lg mt-4 mb-0">Update</button>
                   </div>

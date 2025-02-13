@@ -1,4 +1,4 @@
-<?php view('auth.layouts.header', ['title' => 'Login Page']); ?>
+<?php view('auth.layouts.header', ['title' => 'User Management Sample | Login Page']); ?>
 <div class="container position-sticky z-index-sticky top-0">
   <div class="row">
     <div class="col-12">
@@ -14,7 +14,7 @@
         <div class="col-lg-4 col-md-8 col-12 mx-auto">
           <div class="card z-index-0 fadeIn3 fadeInBottom">
             <?php if(isset($_SESSION['fail'])): ?>
-              <div class="alert alert-danger text-white"><?= $_SESSION['fail']; ?></div>
+              <div class="alert alert-danger text-white mt-4 mx-3"><?= $_SESSION['fail']; ?></div>
               <?php unset($_SESSION['fail']); ?>
             <?php endif; ?>
             <div class="card-body">
@@ -41,10 +41,6 @@
                     <?php unset($_SESSION['errors']['login']['password']); ?>
                   </span>
                 <?php endif; ?>
-                <!-- <div class="form-check form-switch d-flex align-items-center mb-3">
-                    <input class="form-check-input" type="checkbox" id="rememberMe" checked>
-                    <label class="form-check-label mb-0 ms-3" for="rememberMe">Remember me</label>
-                  </div> -->
                 <div class="text-center">
                   <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2">Sign in</button>
                 </div>

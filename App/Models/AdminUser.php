@@ -140,42 +140,49 @@ class AdminUser
   }
 
   public function updateAllData($roles, $features, $permissions)
-  {
+{
     try {
-      foreach ($roles as $user_id => $role_id) {
-        $stmt = $this->db->prepare("UPDATE admin_users SET role_id = :role_id, updated_at = now() WHERE id = :id");
-        $stmt->bindParam(":role_id", $role_id, PDO::PARAM_INT);
-        $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
-        $stmt->execute();
-      }
-      foreach ($permissions as $user_id => $permission_ids) {
-        $stmt = $this->db->prepare("SELECT role_id FROM admin_users WHERE id = :id");
-        $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $role_id = $stmt->fetchColumn();
-  
-        $stmt = $this->db->prepare("DELETE FROM role_permissions WHERE role_id = :role_id");
-        $stmt->bindParam(":role_id", $role_id, PDO::PARAM_INT);
-        $stmt->execute();
-  
-        foreach ($permission_ids as $permissionId) {
-          $stmt = $this->db->prepare("SELECT feature_id FROM permissions WHERE id = :id");
-          $stmt->bindParam(":id", $permissionId, PDO::PARAM_INT);
-          $stmt->execute();
-          $featureId = $stmt->fetchColumn();
-
-          if (isset($features[$user_id]) && in_array($featureId, $features[$user_id])) {
-            $stmt = $this->db->prepare("INSERT INTO role_permissions (role_id, permission_id) VALUES (:role_id, :permission_id)");
+        foreach ($roles as $user_id => $role_id) {
+            $stmt = $this->db->prepare("UPDATE admin_users SET role_id = :role_id, updated_at = now() WHERE id = :id");
             $stmt->bindParam(":role_id", $role_id, PDO::PARAM_INT);
-            $stmt->bindParam(":permission_id", $permissionId, PDO::PARAM_INT);
+            $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
             $stmt->execute();
-          }
         }
-      }
+
+        foreach ($roles as $user_id => $role_id) {
+            // Get role_id for the user
+            $stmt = $this->db->prepare("SELECT role_id FROM admin_users WHERE id = :id");
+            $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $role_id = $stmt->fetchColumn();
+
+            // **DELETE all role-related permissions if no features/permissions exist**
+            $stmt = $this->db->prepare("DELETE FROM role_permissions WHERE role_id = :role_id");
+            $stmt->bindParam(":role_id", $role_id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // If the user has permissions, insert them again
+            if (!empty($permissions[$user_id])) {
+                foreach ($permissions[$user_id] as $permissionId) {
+                    $stmt = $this->db->prepare("SELECT feature_id FROM permissions WHERE id = :id");
+                    $stmt->bindParam(":id", $permissionId, PDO::PARAM_INT);
+                    $stmt->execute();
+                    $featureId = $stmt->fetchColumn();
+
+                    if (isset($features[$user_id]) && in_array($featureId, $features[$user_id])) {
+                        $stmt = $this->db->prepare("INSERT INTO role_permissions (role_id, permission_id) VALUES (:role_id, :permission_id)");
+                        $stmt->bindParam(":role_id", $role_id, PDO::PARAM_INT);
+                        $stmt->bindParam(":permission_id", $permissionId, PDO::PARAM_INT);
+                        $stmt->execute();
+                    }
+                }
+            }
+        }
     } catch (PDOException $e) {
-      echo "Error updating admin user, role, permission: " . $e->getMessage();
+        echo "Error updating admin user, role, permission: " . $e->getMessage();
     }
-  }
+}
+
 
   public function hasPermission($user_id, $permission_name, $feature_name)
   {

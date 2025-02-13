@@ -36,17 +36,11 @@ class HomeController
 
   public function updateAllData($request)
   {
+    $features = $request->get('features') ? $request->get('features') : [];
+    $permissions = $request->get('permissions') ? $request->get('permissions') : [];
     $admin_user = new AdminUser();
-    $admin_user->updateAllData($request->get('roles'), $request->get('features'), $request->get('permissions'));
+    $admin_user->updateAllData($request->get('roles'), $features, $permissions);
     header("location: /admin");
     exit();
   }
-
-  // public function profile()
-  // {
-  //   $email = $_SESSION['user_email'];
-  //   $user = new User();
-  //   $data = $user->getUserByEmail($email);
-  //   return view('admin.profile.index', ['data' => $data]);
-  // }
 }

@@ -106,29 +106,4 @@ class FeatureController
     header("location: /admin/features");
     exit();
   }
-
-  // public function manageFeaturePermission($request, $response, $id)
-  // {
-  //   $permission = new Permission();
-  //   $permissions = $permission->getAllPermissions();
-
-  //   $feature = new Feature();
-  //   $permissionFeature = $feature->getPermissionsByFeature($id);
-  //   $permissionByFeature = [];
-  //   foreach($permissionFeature as $permission) {
-  //     $permissionByFeature[] = $permission['permission_id'];
-  //   }
-  //   $getFeature = $feature->getFeatureById($id);
-
-  //   return view('admin.feature.manage', ['permissions' => $permissions, 'permissionByFeature' => $permissionByFeature, 'feature' => $getFeature]);
-  // }
-
-  // public function updateFeaturePermission($request, $response, $id)
-  // {
-  //   $permissions = $request->get('permissions');
-  //   $feature = new Feature();
-  //   $feature->updateFeaturePermissionData($permissions, $id);
-  //   header("Location: " . $_SERVER['HTTP_REFERER']);
-  //   exit();
-  // }
 }

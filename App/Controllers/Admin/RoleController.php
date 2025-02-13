@@ -108,30 +108,4 @@ class RoleController {
     header("location: /admin/roles");
     exit();
   }
-
-  // public function manageRolePermission($request, $response, $id)
-  // {
-  //   $permission = new Permission();
-  //   $permissions = $permission->getAllPermissions();
-
-  //   $role = new Role();
-  //   $permissionRole = $role->getPermissionsByRole($id);
-  //   $permissionByRole = [];
-  //   foreach($permissionRole as $permission) {
-  //     $permissionByRole[] = $permission['permission_id'];
-  //   }
-
-  //   $getRole = $role->getRoleById($id);
-
-  //   return view('admin.role.manage', ['permissions' => $permissions, 'permissionByRole' => $permissionByRole, 'role' => $getRole]);
-  // }
-
-  // public function updateRolePermission($request, $response, $id)
-  // {
-  //   $permissions = $request->get('permissions');
-  //   $role = new Role();
-  //   $role->updateRolePermissionsData($id, $permissions);
-  //   header("Location: " . $_SERVER['HTTP_REFERER']);
-  //   exit();
-  // }
 }

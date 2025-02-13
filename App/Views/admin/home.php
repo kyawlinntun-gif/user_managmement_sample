@@ -51,24 +51,27 @@ use App\Models\AdminUser;
                                   break;
                                 }
                               }
-                              ?>
+                            ?>
                             <label>
                                 <input type="checkbox" class="feature-checkbox" 
                                       name="features[<?= $admin_user['admin_user_id'] ?>][]" 
                                       value="<?= $feature['id'] ?>"
-                                      <?= $featureChecked ? 'checked' : '' ?> data-user="<?= $admin_user['admin_user_id'] ?>">
+                                      <?= $featureChecked ? 'checked' : '' ?> data-user="<?= $admin_user['admin_user_id'] ?>"
+                                      <?= $_SESSION['user_role'] !== 'admin' ? 'disabled' : ''; ?>>
                                 <?= $feature['name'] ?>
                             </label>
                           </td>
                           <td>
                               <?php foreach ($permissions as $permission): ?>
                                   <?php if ($permission['feature_id'] === $feature['id']): ?>
+
                                       <label>
                                           <input type="checkbox" class="permission-checkbox" 
                                                 name="permissions[<?= $admin_user['admin_user_id'] ?>][]" 
                                                 value="<?= $permission['id'] ?>"
                                                 <?= in_array($permission['id'], $userPermissions[$admin_user['admin_user_id']] ?? []) ? 'checked' : '' ?>
-                                                data-feature="<?= $feature['id']; ?>" data-user="<?= $admin_user['admin_user_id'] ?>">
+                                                data-feature="<?= $feature['id']; ?>" data-user="<?= $admin_user['admin_user_id'] ?>"
+                                                <?= $_SESSION['user_role'] !== 'admin' ? 'disabled' : ''; ?>>
                                           <?= $permission['name'] ?>
                                       </label>
                                   <?php endif; ?>

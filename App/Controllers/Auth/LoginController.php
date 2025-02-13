@@ -39,11 +39,18 @@ class LoginController
 
     $admin_user = new AdminUser();
     $get_admin_user = $admin_user->getUserForAuth($request->get('email'));
-    if (!$get_admin_user['is_active']) {
+    if(!empty($get_admin_user)) {
+      if (!$get_admin_user['is_active']) {
+        $_SESSION['email'] = $data['email'];
+        $_SESSION['fail'] = "Your account is disabled!";
+        header("Location: /login");
+        exit;
+      }
+    } else {
       $_SESSION['email'] = $data['email'];
-      $_SESSION['fail'] = "Your account is disabled!";
-      header("Location: /login");
-      exit;
+        $_SESSION['fail'] = "Your account is not created!";
+        header("Location: /login");
+        exit;
     }
     if ($get_admin_user && password_verify($request->get('password'), $get_admin_user['password'])) {
       $_SESSION['user_id'] = $get_admin_user['admin_user_id'];

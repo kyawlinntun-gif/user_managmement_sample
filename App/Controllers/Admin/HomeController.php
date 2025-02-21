@@ -20,15 +20,12 @@ class HomeController
   {
     $admin_user = new AdminUser();
     $admin_users = $admin_user->getAllUsers();
-    $role = new Role();
-    $roles = $role->getAllRoles();
     $feature = new Feature();
     $features = $feature->getAllFeatures();
     $permission = new Permission();
     $permissions = $permission->getAllPermissions();
     return view('admin.home', [
       'admin_users' => $admin_users,
-      'roles' => $roles,
       'features' => $features,
       'permissions' => $permissions
     ]);

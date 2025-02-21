@@ -17,14 +17,7 @@ use App\Models\AdminUser;
                 <?php if(!is_null($admin_user['role_id'])): ?>
                 <h5>
                   <?= $admin_user['admin_user_name'] ?> 
-                  (Role: 
-                  <select name="roles[<?= $admin_user['admin_user_id'] ?>]">
-                    <?php foreach ($roles as $role): ?>
-                        <option value="<?= $role['id'] ?>" <?= ($admin_user['role_id'] == $role['id']) ? 'selected' : '' ?>>
-                            <?= $role['name'] ?>
-                        </option>
-                    <?php endforeach; ?>
-                  </select>)
+                  (Role: <?= $admin_user['role_name']; ?>)
                 </h5>
                 <table border="1" cellpadding="5" cellspacing="0">
                   <thead>
